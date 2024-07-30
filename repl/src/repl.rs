@@ -1,3 +1,5 @@
+use rustyline::error::ReadlineError;
+use rustyline::DefaultEditor;
 use std::io::{self, Write};
 
 pub fn start() {
@@ -25,28 +27,32 @@ pub fn start() {
     // Try adding an ascii art of a Monkey Lang
     println!("Please feel free to try out the language...");
 
+    let mut rl = DefaultEditor::new().expect("unable to load the default editor");
     // actual repl starts here
     loop {
-        let mut input = String::new();
-
-        print!(">> ");
-        io::stdout().flush().expect("Failed to flush stdout");
-
-        let bytes_read = io::stdin().read_line(&mut input);
-
-        match bytes_read {
-            Ok(0) => {
-                // End of file (Ctrl+Z or Ctrl+D)
-                println!("^Z\nEnd of input detected. Exiting.");
+        match rl.readline(">> ") {
+            Ok(line) => {
+                rl.add_history_entry(line.as_str())
+                    .expect("encountered problem when entering into history");
+                println!("you entered: {:?}", line);
+            }
+            Err(ReadlineError::Interrupted) => {
+                print!("\x1b[1A\x1b[2K\r>> ^C");
+                io::stdout()
+                    .flush()
+                    .expect("failed to flush stdout when interrupted");
                 break;
             }
-            Ok(_) => {
-                // Successful read, process the input
-                println!("You entered: {}", input.trim());
+            Err(ReadlineError::Eof) => {
+                print!("\x1b[1A\x1b[2K\r>> ^D");
+                io::stdout()
+                    .flush()
+                    .expect("failed to flush stdout when eof");
+                break;
             }
             Err(e) => {
                 // Handle any other errors
-                eprintln!("Error reading input: {}", e);
+                eprintln!("error reading input: {}", e);
                 break;
             }
         }
