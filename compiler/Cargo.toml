@@ -4,3 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+unicode-xid = "0.2.4"
+ariadne = { version = "0.4.1", features = ["auto-color"] }
+
+[dependencies.unicode-properties]
+version = "0.1.1"
+default-features = false
+features = ["emoji"]
