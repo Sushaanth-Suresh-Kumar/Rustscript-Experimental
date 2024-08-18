@@ -415,6 +415,7 @@ impl<'a> Lexer<'a> {
                     return TokenKind::Literal {
                         kind: LiteralKind::Str {
                             terminated: true,
+                            start: ch,
                             value: str_literal,
                         },
                     };
@@ -432,6 +433,7 @@ impl<'a> Lexer<'a> {
         TokenKind::Literal {
             kind: LiteralKind::Str {
                 terminated: false,
+                start: ch,
                 value: str_literal,
             },
         }

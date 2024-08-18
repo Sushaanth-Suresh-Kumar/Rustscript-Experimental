@@ -1,5 +1,5 @@
 use super::token::Token;
-use crate::TokenKind;
+use crate::{token::LiteralKind, TokenKind};
 use ariadne::{Color, ColorGenerator, Fmt, Label, Report, ReportKind, Source};
 
 #[derive(Debug)]
@@ -97,9 +97,32 @@ impl<'a> LErrorHandler<'a> {
                     .print((self.file_name, Source::from(self.code)))
                     .unwrap()
             }
+            TokenKind::Literal {
+                kind:
+                    LiteralKind::Str {
+                        terminated: false,
+                        start: character,
+                        value: _,
+                    },
+            } => Report::build(ReportKind::Error, self.file_name, err_token.span.low)
+                .with_code(5)
+                .with_message(format!("Unterminated string"))
+                .with_label(
+                    Label::new((self.file_name, err_token.span.low..err_token.span.high - 1))
+                        .with_message(format!("This {} is unterminated", "string".fg(a)))
+                        .with_color(a),
+                )
+                .with_note(format!(
+                    "{} must be terminated with {}",
+                    "string".fg(out),
+                    character.fg(out)
+                ))
+                .finish()
+                .print((self.file_name, Source::from(self.code)))
+                .unwrap(),
             TokenKind::Unknown => {
                 Report::build(ReportKind::Error, self.file_name, err_token.span.low)
-                    .with_code(5)
+                    .with_code(6)
                     .with_message(format!("Unknown Token"))
                     .with_label(
                         Label::new((self.file_name, err_token.span.low..err_token.span.high))

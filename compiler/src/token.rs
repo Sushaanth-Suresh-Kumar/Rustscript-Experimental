@@ -226,6 +226,7 @@ pub enum LiteralKind {
     }, // TODO: there is one more field called 'empty_exponent' not sure why its used
     Str {
         terminated: bool,
+        start: char,
         value: String,
     },
 }
