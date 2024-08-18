@@ -36,7 +36,7 @@ pub fn start() {
             Ok(line) => {
                 rl.add_history_entry(line.as_str())
                     .expect("encountered problem when entering into history");
-                compiler::compile(&line);
+                compiler::compile(&line, "");
             }
             Err(ReadlineError::Interrupted) => {
                 print!("\x1b[1A\x1b[2K\r>> ^C");
